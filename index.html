@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<title>三因子定投计算器</title>
+<style>
+    body {
+        font-family: "PingFang SC", sans-serif;
+        background: linear-gradient(135deg, #dfe8ff, #f9fcff);
+        display: flex;
+        justify-content: center;
+        padding: 40px 0;
+    }
+    .container {
+        width: 1150px;
+        display: flex;
+        gap: 30px;
+    }
+
+    .card {
+        flex: 1;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+        padding: 32px 40px;
+        transition: 0.3s;
+    }
+    .card:hover { box-shadow: 0 14px 40px rgba(0,0,0,0.16); transform: translateY(-2px); }
+
+    h1 { text-align: center; margin-bottom: 25px; font-weight: 700; }
+
+    label { font-weight: 600; margin-top: 16px; display: block; }
+    input {
+        width: 100%; padding: 10px 12px; border: 1px solid #ccd4ff;
+        border-radius: 10px; margin-top: 6px; font-size: 15px;
+        background: #fbfcff; transition: 0.25s;
+    }
+
+    input:focus { border-color: #5c83ff; box-shadow: 0 0 0 3px rgba(92,131,255,0.25); outline: none; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+    th, td { border-bottom: 1px solid #ececec; padding: 6px; text-align: center; }
+    th { background: #f4f6ff; }
+
+    .small-input { width: 60px; padding: 6px; }
+
+    button {
+        margin-top: 26px; width: 100%; padding: 14px;
+        background: linear-gradient(90deg, #5d79ff, #4670ff);
+        color: white; border: none; border-radius: 10px;
+        font-size: 18px; font-weight: 600; cursor: pointer; transition: 0.25s;
+    }
+    button:hover { transform: translateY(-1px); filter: brightness(1.08); }
+
+    .result {
+        margin-top: 28px; background: #e9efff; border-left: 6px solid #5977ff;
+        padding: 18px; border-radius: 8px; font-size: 15px; line-height: 1.8;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- 左侧说明 + 动态评分表 -->
+<div class="card">
+<h1>CRCL三因子动态评分定投模型</h1>
+<div class="result">
+<b>模型说明：</b><br>
+• USDC 增速反映 Circle 资产规模变化。<br>
+• 10年期美债利率决定 Circle 利差收入能力。<br>
+• 两者共同决定 USDC 的基本面强弱。<br>
+</div>
+<h3>① 股价评分（美元）</h3>
+<table id="table-price">
+<tr><th>下限</th><th>上限</th><th>描述</th><th>得分</th></tr>
+<tr><td><input class="small-input" value="0"></td><td><input class="small-input" value="70"></td><td>低估</td><td><input class="small-input" value="100"></td></tr>
+<tr><td><input class="small-input" value="70"></td><td><input class="small-input" value="90"></td><td>偏低</td><td><input class="small-input" value="80"></td></tr>
+<tr><td><input class="small-input" value="90"></td><td><input class="small-input" value="110"></td><td>中性</td><td><input class="small-input" value="50"></td></tr>
+<tr><td><input class="small-input" value="110"></td><td><input class="small-input" value="130"></td><td>偏贵</td><td><input class="small-input" value="20"></td></tr>
+<tr><td><input class="small-input" value="130"></td><td><input class="small-input" value="9999"></td><td>高估</td><td><input class="small-input" value="0"></td></tr>
+</table>
+
+<h3>② USDC增速评分（每周增长率）</h3>
+<table id="table-usdc">
+<tr><th>下限 (%)</th><th>上限 (%)</th><th>描述</th><th>得分</th></tr>
+<tr><td><input class="small-input" value="1"></td><td><input class="small-input" value="999"></td><td>强劲</td><td><input class="small-input" value="100"></td></tr>
+<tr><td><input class="small-input" value="0.75"></td><td><input class="small-input" value="1"></td><td>优秀</td><td><input class="small-input" value="80"></td></tr>
+<tr><td><input class="small-input" value="0.5"></td><td><input class="small-input" value="0.75"></td><td>良好</td><td><input class="small-input" value="50"></td></tr>
+<tr><td><input class="small-input" value="0.25"></td><td><input class="small-input" value="0.5"></td><td>慢增长</td><td><input class="small-input" value="20"></td></tr>
+<tr><td><input class="small-input" value="-0.25"></td><td><input class="small-input" value="0.25"></td><td>无增长</td><td><input class="small-input" value="0"></td></tr>
+<tr><td><input class="small-input" value="-999"></td><td><input class="small-input" value="-0.25"></td><td>收缩</td><td><input class="small-input" value="-20"></td></tr>
+</table>
+
+<h3>③ 利率评分（10年期美债利率）</h3>
+<table id="table-rate">
+<tr><th>下限 (%)</th><th>上限 (%)</th><th>描述</th><th>得分</th></tr>
+<tr><td><input class="small-input" value="4.5"></td><td><input class="small-input" value="99"></td><td>强利差</td><td><input class="small-input" value="100"></td></tr>
+<tr><td><input class="small-input" value="3.5"></td><td><input class="small-input" value="4.5"></td><td>高利差</td><td><input class="small-input" value="80"></td></tr>
+<tr><td><input class="small-input" value="2.5"></td><td><input class="small-input" value="3.5"></td><td>中利差</td><td><input class="small-input" value="50"></td></tr>
+<tr><td><input class="small-input" value="1.5"></td><td><input class="small-input" value="2.5"></td><td>低利差</td><td><input class="small-input" value="20"></td></tr>
+<tr><td><input class="small-input" value="0"></td><td><input class="small-input" value="1.5"></td><td>无利差</td><td><input class="small-input" value="0"></td></tr>
+</table>
+</div>
+
+<!-- 右侧计算器 -->
+<div class="card">
+<h1>定投计算器</h1>
+
+<label>定投基数（美元）</label>
+<input type="number" id="base" value="5000">
+
+<label>股价</label>
+<input type="number" id="price">
+
+<label>USDC增速 (%)</label>
+<input type="number" id="usdc">
+
+<label>10年美债收益率 (%)</label>
+<input type="number" id="rate">
+
+<h3>权重设置（总和=1）</h3>
+<label>股价权重</label><input type="number" id="w_price" value="0.4" step="0.01">
+<label>增速权重</label><input type="number" id="w_usdc" value="0.3" step="0.01">
+<label>利率权重</label><input type="number" id="w_rate" value="0.3" step="0.01">
+
+<button onclick="calculate()">计算定投金额</button>
+
+<div class="result" id="result" style="display:none;"></div>
+</div>
+</div>
+
+<script>
+function getScore(value, tableId){
+    let rows = document.getElementById(tableId).rows;
+    for(let i=1;i<rows.length;i++){
+        let min = parseFloat(rows[i].cells[0].children[0].value);
+        let max = parseFloat(rows[i].cells[1].children[0].value);
+        let score = parseFloat(rows[i].cells[3].children[0].value);
+        if(value >= min && value < max) return score;
+    }
+    return 0;
+}
+
+function calculate(){
+    let price = parseFloat(document.getElementById("price").value);
+    let usdc = parseFloat(document.getElementById("usdc").value);
+    let rate = parseFloat(document.getElementById("rate").value);
+    let base = parseFloat(document.getElementById("base").value);
+
+    let w_price = parseFloat(document.getElementById("w_price").value);
+    let w_usdc = parseFloat(document.getElementById("w_usdc").value);
+    let w_rate  = parseFloat(document.getElementById("w_rate").value);
+
+    let priceScore = getScore(price, "table-price");
+    let usdcScore  = getScore(usdc, "table-usdc");
+    let rateScore  = getScore(rate, "table-rate");
+
+    let totalScore = priceScore*w_price + usdcScore*w_usdc + rateScore*w_rate;
+    let invest = totalScore < 20 ? 0 : (totalScore >= 80 ? base : base*(totalScore/100));
+
+    document.getElementById("result").style.display = "block";
+    document.getElementById("result").innerHTML = `
+        <b>总得分：${totalScore.toFixed(1)}</b><br>
+        <b>定投金额：${invest.toFixed(0)} USDC</b><br><br>
+
+        <b>计算过程：</b><br>
+        • 股价得分 = ${priceScore} × 权重${w_price} = ${(priceScore*w_price).toFixed(1)}<br>
+        • USDC增速得分 = ${usdcScore} × 权重${w_usdc} = ${(usdcScore*w_usdc).toFixed(1)}<br>
+        • 利率得分 = ${rateScore} × 权重${w_rate} = ${(rateScore*w_rate).toFixed(1)}<br>
+        • 总得分 = (${priceScore}×${w_price}) + (${usdcScore}×${w_usdc}) + (${rateScore}×${w_rate}) = <b>${totalScore.toFixed(1)}</b><br>
+        • 定投金额 = 基础仓位 ${base} × (总得分 / 100) = <b>${invest.toFixed(0)} USDC</b><br><br>
+
+        <b>定投执行规则：</b><br>
+        • 当总得分 &lt; 20：停止定投（保持现金，不加仓）<br>
+        • 当总得分 ≥ 80：按定投基数全额买入（价值被低估）
+    `;
+}
+</script>
+
+</body>
+</html>
